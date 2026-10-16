@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: labasa-yaqona-portal
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "waitress-serve --listen=0.0.0.0:${PORT:-5000} app:app"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 10000
