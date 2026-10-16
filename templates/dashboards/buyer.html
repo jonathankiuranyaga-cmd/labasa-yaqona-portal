@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Buyer dashboard | Labasa Yaqona Portal{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">{{ g.user.role|title }} workspace</span><h1>Bula, {{ g.user.name }}</h1><p>Browse available yaqona and keep track of your conversations with farmers.</p></div><a class="btn btn-primary" href="{{ url_for('browse_listings') }}">Browse kava</a></section>
+<section class="panel"><div class="panel-heading"><h2>My enquiries</h2><span class="count">{{ enquiries|length }}</span></div>
+{% if enquiries %}<div class="conversation-list">{% for e in enquiries %}<a class="conversation-item" href="{{ url_for('conversation', enquiry_id=e.id) }}"><span class="avatar">{{ e.farmer_name[0]|upper }}</span><span class="conversation-copy"><strong>{{ e.kava_type }} · {{ e.location }}</strong><small>Farmer: {{ e.farmer_name }}</small><small>{{ e.last_message or 'No messages yet' }}</small></span><span class="arrow">→</span></a>{% endfor %}</div>{% else %}<div class="empty-state"><p>You have not sent any enquiries yet.</p><a class="btn btn-primary" href="{{ url_for('browse_listings') }}">Find kava listings</a></div>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Browse kava | Labasa Yaqona Portal{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">Vanua Levu marketplace</span><h1>Browse yaqona listings</h1><p>Search approved listings and contact farmers directly.</p></div>{% if g.user and g.user.role == 'farmer' %}<a class="btn btn-primary" href="{{ url_for('create_listing') }}">＋ Add listing</a>{% endif %}</section>
+
+<div class="results-band">
+  <div><strong>{{ total }} listing{{ '' if total == 1 else 's' }} found</strong><span>Prices are asking prices, not verified market quotes.</span></div>
+  <div class="quick-filters">
+    <span class="quick-label">Jump to:</span>
+    {% for loc in locations[:6] %}<a class="quick-chip{{ ' active' if request.args.get('location')==loc }}" href="{{ url_for('browse_listings', location=loc) }}">{{ loc }}</a>{% endfor %}
+  </div>
+</div>
+
+<form class="filter-panel" method="get">
+  <div class="filter-grid">
+    <div class="field search-field"><label for="q">Search by keyword</label><input id="q" name="q" value="{{ request.args.get('q','') }}" placeholder="e.g. waka, Labasa, farm name"></div>
+    <div class="field"><label for="location">Location</label><select id="location" name="location"><option value="">All locations</option>{% for loc in locations %}<option value="{{ loc }}" {% if request.args.get('location')==loc %}selected{% endif %}>{{ loc }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="kava_type">Kava type</label><select id="kava_type" name="kava_type"><option value="">All types</option>{% for typ in kava_types %}<option value="{{ typ }}" {% if request.args.get('kava_type')==typ %}selected{% endif %}>{{ typ }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="drying_status">Drying status</label><select id="drying_status" name="drying_status"><option value="">Any status</option>{% for opt in drying_options %}<option value="{{ opt }}" {% if request.args.get('drying_status')==opt %}selected{% endif %}>{{ opt }}</option>{% endfor %}</select></div>
+    <div class="field"><label for="min_price">Min. price (FJD)</label><input id="min_price" name="min_price" type="number" min="0" step="0.01" value="{{ request.args.get('min_price','') }}" placeholder="0.00"></div>
+    <div class="field"><label for="max_price">Max. price (FJD)</label><input id="max_price" name="max_price" type="number" min="0" step="0.01" value="{{ request.args.get('max_price','') }}" placeholder="Any"></div>
+  </div>
+  <div class="filter-actions"><button class="btn btn-primary" type="submit">Search listings</button><a class="btn btn-light" href="{{ url_for('browse_listings') }}">Clear filters</a></div>
+</form>
+
+{% if listings %}
+<div class="listing-grid">
+{% for item in listings %}{% set imgs = listing_images.get(item.id, []) %}
+<article class="listing-card">
+  <div class="listing-media">
+    {% if imgs %}
+      <img src="{{ url_for('uploaded_file', filename=imgs[0]) }}" alt="{{ item.kava_type }} yaqona from {{ item.location }}">
+    {% else %}
+      <div class="listing-placeholder"><span class="listing-mark" aria-hidden="true">L</span></div>
+    {% endif %}
+    <span class="pill">{{ item.drying_status }}</span><span class="listing-mark" aria-hidden="true">L</span>
+  </div>
+  <div class="listing-price"><span>FJD {{ "%.2f"|format(item.price) }}</span><small>{% if item.unit == 'kg' %}/kg{% else %}/bag{% endif %}</small></div>
+  <h3>{{ item.kava_type }} yaqona</h3><p class="muted">{{ item.location }} · {{ item.farmer_name }}</p>
+  <div class="listing-stats"><div><small>Available</small><strong>{{ item.quantity|round(2) }} {{ item.unit }}</strong></div><div><small>Drying</small><strong>{{ item.drying_status }}</strong></div></div>
+  <a class="btn btn-card" href="{{ url_for('listing_detail', listing_id=item.id) }}">View details</a>
+</article>{% endfor %}
+</div>
+{% if pages > 1 %}<nav class="pagination" aria-label="Listing pages">{% if page > 1 %}<a href="{{ url_for('browse_listings', q=request.args.get('q',''), location=request.args.get('location',''), kava_type=request.args.get('kava_type',''), drying_status=request.args.get('drying_status',''), min_price=request.args.get('min_price',''), max_price=request.args.get('max_price',''), page=page-1) }}">← Previous</a>{% endif %}<span>Page {{ page }} of {{ pages }}</span>{% if page < pages %}<a href="{{ url_for('browse_listings', q=request.args.get('q',''), location=request.args.get('location',''), kava_type=request.args.get('kava_type',''), drying_status=request.args.get('drying_status',''), min_price=request.args.get('min_price',''), max_price=request.args.get('max_price',''), page=page+1) }}">Next →</a>{% endif %}</nav>{% endif %}
+{% else %}
+<div class="empty-state"><span class="empty-icon" aria-hidden="true">!</span><h2>No listings found</h2><p>Try changing your keyword or filters. Approved listings will appear here.</p><div class="filter-actions"><a class="btn btn-light" href="{{ url_for('browse_listings') }}">Clear filters</a>{% if g.user and g.user.role == 'farmer' %}<a class="btn btn-primary" href="{{ url_for('create_listing') }}">＋ Add a listing</a>{% endif %}</div></div>
+{% endif %}
+{% endblock %}

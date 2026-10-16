@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ listing.kava_type }} listing | Labasa Yaqona Portal{% endblock %}
+{% block content %}
+<div class="breadcrumbs"><a href="{{ url_for('browse_listings') }}">Browse kava</a><span>›</span><span>{{ listing.kava_type }} listing</span></div>
+
+{% if images %}
+<section class="listing-gallery">
+  <div class="gallery-featured"><img src="{{ url_for('uploaded_file', filename=images[0].filename) }}" alt="{{ listing.kava_type }} yaqona"></div>
+  <div class="gallery-thumbs">{% for img in images %}<img src="{{ url_for('uploaded_file', filename=img.filename) }}" alt="" class="thumb{{ ' active' if loop.index0 == 0 }}" data-target="{{ loop.index0 }}">{% endfor %}</div>
+</section>
+{% endif %}
+
+<section class="detail-layout"><div class="detail-main"><span class="pill">{{ listing.drying_status }}</span><h1>{{ listing.kava_type }} yaqona</h1><p class="muted">Listed from {{ listing.location }}</p><div class="price-highlight"><small>Asking price</small><strong>FJD {{ "%.2f"|format(listing.price) }}{% if listing.unit == 'kg' %} / kg{% else %} / bag{% endif %}</strong><span>Final price and terms are agreed directly.</span></div>
+<div class="detail-facts"><div><small>Quantity available</small><strong>{{ listing.quantity|round(2) }} {{ listing.unit }}</strong></div><div><small>Drying status</small><strong>{{ listing.drying_status }}</strong></div><div><small>Location</small><strong>{{ listing.location }}</strong></div><div><small>Kava type</small><strong>{{ listing.kava_type }}</strong></div></div>
+<section class="detail-section"><h2>About this listing</h2><p>{{ listing.description or "The farmer has not added a description." }}</p></section>
+<div class="notice"><strong>Trading reminder</strong><p>This portal does not process payments or certify quality. Discuss product details, transport, payment and any standards requirements directly.</p></div>
+</div><aside class="panel farmer-card"><span class="avatar avatar-large">{{ listing.farmer_name[0]|upper }}</span><span class="eyebrow">Farmer profile</span><h2>{{ listing.farmer_name }}</h2>{% if listing.farmer_business %}<p class="muted">{{ listing.farmer_business }}</p>{% endif %}<p class="detail-location">{{ listing.farmer_location }}</p>{% if listing.farmer_bio %}<p>{{ listing.farmer_bio }}</p>{% endif %}{% if listing.farmer_phone %}<p><strong>Phone:</strong> {{ listing.farmer_phone }}</p>{% endif %}
+
+{% if g.user and listing.farmer_id == g.user.id %}
+<div class="image-admin"><span class="eyebrow">Listing photos</span>
+  <form method="post" action="{{ url_for('upload_listing_image', listing_id=listing.id) }}" enctype="multipart/form-data" class="image-upload-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input id="images" name="images" type="file" accept="image/png,image/jpeg,image/webp" multiple>
+    <button class="btn btn-small btn-primary" type="submit">Add photos</button>
+  </form>
+  {% if images %}
+  <div class="image-list">{% for img in images %}
+    <div class="image-item"><img src="{{ url_for('uploaded_file', filename=img.filename) }}" class="image-item-thumb"><form method="post" action="{{ url_for('delete_listing_image', listing_id=listing.id, image_id=img.id) }}" data-confirm="Delete this photo?" style="display:inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-small link-button danger-text" type="submit">Delete</button></form></div>
+  {% endfor %}</div>
+  {% endif %}
+</div>
+{% endif %}
+
+{% if g.user and g.user.role in ('buyer','exporter') %}<form method="post" action="{{ url_for('send_enquiry', listing_id=listing.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><div class="field"><label for="body">Send an enquiry</label><textarea id="body" name="body" rows="4" maxlength="2000" required placeholder="Bula, I am interested in this listing. Is it available?"></textarea></div><button class="btn btn-primary btn-full" type="submit">Send enquiry</button></form>{% elif not g.user %}<p class="small-note">Log in as a buyer or exporter to send an enquiry.</p><a class="btn btn-primary btn-full" href="{{ url_for('login') }}">Log in to enquire</a>{% else %}<p class="small-note">Buyer and exporter accounts can contact the farmer through this portal.</p>{% endif %}</aside></section>
+{% endblock %}

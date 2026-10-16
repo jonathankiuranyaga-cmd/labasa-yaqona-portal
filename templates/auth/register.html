@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Register | Labasa Yaqona Portal{% endblock %}
+{% block content %}
+<section class="form-page"><div class="form-intro"><span class="eyebrow">Join the community</span><h1>Create your account</h1><p>Choose the account type that best describes you. Your account will be reviewed by an administrator before you can log in.</p><div class="form-help"><strong>Already registered?</strong><a href="{{ url_for('login') }}">Log in here</a></div></div>
+<form class="panel form-panel" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="field"><label for="name">Full name *</label><input id="name" name="name" required maxlength="100" autocomplete="name" placeholder="e.g. Mere Vula"></div>
+  <div class="field"><label for="email">Email address *</label><input id="email" name="email" type="email" required maxlength="160" autocomplete="email" placeholder="you@example.com"></div>
+  <div class="field"><label for="password">Password *</label><input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters"><small>Use at least 8 characters. Do not reuse an important password.</small></div>
+  <div class="field"><label for="role">I am registering as *</label><select id="role" name="role" required><option value="">Choose account type</option><option value="farmer">Farmer</option><option value="buyer">Buyer</option><option value="exporter">Exporter</option></select></div>
+  <div class="field"><label for="location">Location *</label><select id="location" name="location" required><option value="">Choose location</option>{% for loc in locations %}<option>{{ loc }}</option>{% endfor %}</select></div>
+  <div class="field"><label for="phone">Phone number (optional)</label><input id="phone" name="phone" maxlength="40" autocomplete="tel" placeholder="Your contact number"></div>
+  <div class="field"><label for="business_name">Business / farm name (optional)</label><input id="business_name" name="business_name" maxlength="120" placeholder="Business or farm name"></div>
+  <button class="btn btn-primary btn-full" type="submit">Submit registration</button><p class="small-note">Registration is free. Your account starts as pending until reviewed.</p>
+</form></section>
+{% endblock %}

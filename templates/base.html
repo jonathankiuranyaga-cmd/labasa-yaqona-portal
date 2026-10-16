@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#174c35">
+  <title>{% block title %}Labasa Yaqona Portal{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">Y</span><span>Labasa <strong>Yaqona Portal</strong><small>Vanua Levu, Fiji</small></span></a>
+  <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+  <nav class="main-nav">
+    <a href="{{ url_for('browse_listings') }}" class="{% if request.endpoint=='browse_listings' %}active{% endif %}">Browse kava</a>
+    <a href="{{ url_for('price_guide') }}" class="{% if request.endpoint=='price_guide' %}active{% endif %}">Price guide</a>
+    <a href="{{ url_for('about') }}" class="{% if request.endpoint=='about' %}active{% endif %}">About / Contact</a>
+    {% if g.user %}
+      {% if g.user.role == 'admin' %}<a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint=='admin_dashboard' %}active{% endif %}">Admin</a>
+      {% elif g.user.role == 'farmer' %}<a href="{{ url_for('farmer_dashboard') }}" class="{% if request.endpoint=='farmer_dashboard' %}active{% endif %}">Dashboard</a>
+      {% else %}<a href="{{ url_for('buyer_dashboard') }}" class="{% if request.endpoint=='buyer_dashboard' %}active{% endif %}">Dashboard</a>{% endif %}
+      <a href="{{ url_for('profile') }}" class="{% if request.endpoint=='profile' %}active{% endif %}">My profile</a>
+      <form class="nav-logout" method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="link-button" type="submit">Log out</button></form>
+    {% else %}
+      <a href="{{ url_for('login') }}">Log in</a><a class="nav-cta" href="{{ url_for('register') }}">Register</a>
+    {% endif %}
+  </nav>
+</header>
+<main>
+  <div class="flash-wrap">
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+      <div class="flash {{ category }}" role="status">{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <div><strong>Labasa Yaqona Portal</strong><p>A simple information and communication tool for Vanua Levu's yaqona community.</p></div>
+  <div><a href="{{ url_for('about') }}">About</a><a href="{{ url_for('price_guide') }}">Price guide</a><a href="{{ url_for('browse_listings') }}">Browse listings</a></div>
+  <p class="footer-note">No payments are processed here. Buyers and farmers arrange payment separately. Listings and prices are not a substitute for the Fiji Kava Standard or traditional trading practices.</p>
+</footer>
+</body>
+</html>

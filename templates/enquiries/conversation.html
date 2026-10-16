@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Enquiry conversation | Labasa Yaqona Portal{% endblock %}
+{% block content %}
+<section class="conversation-page"><div class="breadcrumbs"><a href="{{ url_for('dashboard') }}">Dashboard</a><span>›</span><span>Conversation</span></div>
+<div class="panel conversation-panel"><div class="conversation-header"><div><span class="eyebrow">Enquiry conversation</span><h1>{{ enquiry.kava_type }} · {{ enquiry.location }}</h1><p>Buyer: {{ enquiry.buyer_name }} · Farmer: {{ enquiry.farmer_name }}</p></div><span class="status status-{{ enquiry.listing_status }}">{{ enquiry.listing_status|title }}</span></div>
+<div class="message-list">{% for message in messages %}<article class="message {% if message.sender_id == g.user.id %}mine{% endif %}"><div class="message-meta"><strong>{{ message.sender_name }}</strong><span>{{ message.sender_role|title }}</span><time>{{ message.created_at }}</time></div><p>{{ message.body }}</p></article>{% else %}<p class="muted">No messages yet.</p>{% endfor %}</div>
+<form method="post" class="reply-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label for="body">Write a reply</label><textarea id="body" name="body" rows="3" maxlength="2000" required placeholder="Type your message here..."></textarea><button class="btn btn-primary" type="submit">Send reply</button></form>
+<p class="small-note">Payments are arranged separately between the parties. Do not share passwords or sensitive financial details in messages.</p></div></section>
+{% endblock %}

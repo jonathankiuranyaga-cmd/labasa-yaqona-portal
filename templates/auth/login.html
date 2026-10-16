@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Log in | Labasa Yaqona Portal{% endblock %}
+{% block content %}
+<section class="form-page login-page"><div class="form-intro"><span class="eyebrow">Welcome back</span><h1>Log in to your portal</h1><p>Use the email address and password you registered with.</p><div class="form-help"><strong>New to the portal?</strong><a href="{{ url_for('register') }}">Create an account</a></div></div>
+<form class="panel form-panel" method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="field"><label for="email">Email address</label><input id="email" name="email" type="email" required autocomplete="username" placeholder="you@example.com"></div>
+<div class="field"><label for="password">Password</label><input id="password" name="password" type="password" required autocomplete="current-password" placeholder="Your password"></div>
+<button class="btn btn-primary btn-full" type="submit">Log in</button>
+<p class="small-note">New accounts must be approved by an administrator before login is available.</p>
+</form></section>
+{% endblock %}

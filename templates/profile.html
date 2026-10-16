@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}My profile | Labasa Yaqona Portal{% endblock %}
+{% block content %}
+<section class="form-page"><div class="form-intro"><span class="eyebrow">Your details</span><h1>My profile</h1><p>Keep your contact and location information up to date.</p><div class="profile-status"><span class="status status-{{ g.user.status }}">{{ g.user.status|title }}</span><span>{{ g.user.role|title }} account</span></div></div>
+<form class="panel form-panel" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="field"><label for="name">Full name *</label><input id="name" name="name" required maxlength="100" value="{{ g.user.name }}"></div>
+<div class="field"><label>Email address</label><input value="{{ g.user.email }}" disabled><small>Email address cannot be changed here.</small></div>
+<div class="field"><label for="phone">Phone number</label><input id="phone" name="phone" maxlength="40" value="{{ g.user.phone }}"></div>
+<div class="field"><label for="location">Location *</label><select id="location" name="location" required>{% for loc in locations %}<option {% if loc == g.user.location %}selected{% endif %}>{{ loc }}</option>{% endfor %}</select></div>
+<div class="field"><label for="business_name">Business / farm name</label><input id="business_name" name="business_name" maxlength="120" value="{{ g.user.business_name }}"></div>
+<div class="field"><label for="bio">Short profile description</label><textarea id="bio" name="bio" maxlength="600" rows="4" placeholder="Tell other portal users a little about your farm or business.">{{ g.user.bio }}</textarea></div>
+<button class="btn btn-primary btn-full" type="submit">Save profile</button></form></section>
+{% endblock %}
